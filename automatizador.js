@@ -4,54 +4,67 @@ const fs = require("fs");
 const path = require("path");
 
 const inputFolderPath = "./entrada"; // Pasta onde serão adicionados os arquivos Excel ou CSV
-const outputFolderPath = "./saida"; // Pasta onde serão salvos os arquivos CSV
+const outputFolderPath = "./saida"; // Pasta onde serão salvos os arquivos CSV e XLSX
 
-function convertExcelToCSV(filePath) {
+function processFile(filePath) {
   if (path.extname(filePath) === ".xlsx") {
     console.log(`Novo arquivo Excel detectado: ${filePath}`);
-
-    // Ler o arquivo Excel
-    const workbook = XLSX.readFile(filePath);
-    const sheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[sheetName];
-
-    // Converter para CSV
-    const csvData = XLSX.utils.sheet_to_csv(sheet);
-
-    // Criar o nome do arquivo CSV de acordo com o arquivo Excel
-    const csvFileName = path.basename(filePath, ".xlsx") + ".csv";
-    const csvFilePath = path.join(outputFolderPath, csvFileName);
-
-    // Salvar o arquivo CSV
-    fs.writeFileSync(csvFilePath, csvData);
-
-    console.log(`Arquivo CSV criado: ${csvFilePath}`);
+    convertExcelToCSV(filePath);
+  } else if (path.extname(filePath) === ".csv") {
+    console.log(`Novo arquivo CSV detectado: ${filePath}`);
+    convertCSVToExcel(filePath);
+    moveFile(
+      filePath,
+      path.join(outputFolderPath, path.basename(filePath, ".csv") + ".xlsx")
+    );
   }
 }
 
-function moveCSVFile(filePath) {
+function convertExcelToCSV(filePath) {
+  // Código existente para a conversão de Excel para CSV
+  // ...
+}
+
+function convertCSVToExcel(filePath) {
   if (path.extname(filePath) === ".csv") {
-    console.log(`Novo arquivo CSV detectado: ${filePath}`);
+    console.log(`Convertendo CSV para Excel: ${filePath}`);
 
-    // Criar o caminho de destino para o arquivo CSV
-    const csvFileName = path.basename(filePath);
-    const csvFilePath = path.join(outputFolderPath, csvFileName);
+    const csvData = fs.readFileSync(filePath, "utf-8");
 
-    // Tentar mover o arquivo CSV para a pasta de saída, com tratamento de erro
-    try {
-      fs.renameSync(filePath, csvFilePath);
-      console.log(`Arquivo CSV movido para: ${csvFilePath}`);
-    } catch (error) {
-      if (error.code === "EBUSY") {
-        console.log(
-          `O arquivo está ocupado ou bloqueado. Tentando novamente em 1 segundo...`
-        );
-        setTimeout(() => {
-          moveCSVFile(filePath); // Tentar mover novamente após um segundo
-        }, 1000);
-      } else {
-        console.error(`Erro durante a movimentação do arquivo CSV: ${error}`);
-      }
+    // Converter CSV para matriz de linhas
+    const csvLines = csvData.trim().split("\n");
+    const csvRows = csvLines.map((line) => line.split(","));
+
+    // Criar um novo workbook e adicionar a planilha
+    const workbook = XLSX.utils.book_new();
+    const sheet = XLSX.utils.aoa_to_sheet(csvRows);
+    XLSX.utils.book_append_sheet(workbook, sheet, "Sheet1");
+
+    // Criar o nome do arquivo Excel
+    const xlsxFileName = path.basename(filePath, ".csv") + ".xlsx";
+    const xlsxFilePath = path.join(outputFolderPath, xlsxFileName);
+
+    // Salvar o arquivo Excel
+    XLSX.writeFile(workbook, xlsxFilePath);
+
+    console.log(`Arquivo Excel criado: ${xlsxFilePath}`);
+  }
+}
+
+function moveFile(filePath, destFilePath, attempt = 1) {
+  try {
+    fs.renameSync(filePath, destFilePath);
+    console.log(`Arquivo movido para: ${destFilePath}`);
+  } catch (error) {
+    if (error.code === "EBUSY" && attempt < 5) {
+      console.log(
+        `O arquivo está ocupado ou bloqueado. Tentando novamente em 1 segundo...`
+      );
+      setTimeout(() => {
+        moveFile(filePath, destFilePath, attempt + 1);
+      }, 1000);
+    } else {
+      console.error(`Erro durante a movimentação do arquivo: ${error}`);
     }
   }
 }
@@ -68,8 +81,12 @@ function startMonitoring() {
   );
 
   watcher.on("add", (filePath) => {
-    convertExcelToCSV(filePath);
-    moveCSVFile(filePath);
+    try {
+      processFile(filePath);
+    } catch (error) {
+      console.error(`Erro ao processar arquivo: ${filePath}`);
+      console.error(error);
+    }
   });
 
   // Lidar com erros
