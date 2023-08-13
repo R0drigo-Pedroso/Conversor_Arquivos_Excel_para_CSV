@@ -1,68 +1,62 @@
-# Conversor Automático de Arquivos Excel para CSV com Monitoramento
+Claro! Aqui está um README detalhado que explica a instalação, forma de uso, linguagem utilizada e o problema que o código acima soluciona:
 
-Este é um script em Node.js que automatiza a conversão de arquivos Excel para o formato CSV. Além disso, ele monitora uma pasta específica em busca de novos arquivos Excel ou CSV, efetua a conversão e movimenta os arquivos resultantes para uma pasta de saída.
+## Conversor Automatizado de Arquivos Excel para CSV e Vice-Versa
 
-## Requisitos
+![Node.js](https://img.shields.io/badge/Node.js-14.x-green.svg)
+![XLSX Library](https://img.shields.io/badge/xlsx-0.17.0-blue.svg)
+![Chokidar Library](https://img.shields.io/badge/chokidar-3.5.2-blue.svg)
 
-Antes de executar este script, certifique-se de ter os seguintes requisitos instalados no seu sistema:
+Este é um script Node.js que monitora uma pasta de entrada para novos arquivos Excel (XLSX) ou CSV e os converte automaticamente para o formato desejado. Os arquivos convertidos são movidos para pastas específicas de saída, mantendo o nome original.
 
-- [Node.js](https://nodejs.org/): Certifique-se de ter o Node.js instalado. Você pode baixar a versão apropriada para o seu sistema operacional no site oficial.
+### Problema Solucionado
 
-## Instalação e Configuração
+Muitas vezes, é necessário lidar com arquivos em diferentes formatos, como Excel (XLSX) e CSV, e realizar conversões manuais pode ser demorado e propenso a erros. Esse script automatiza o processo de conversão, economizando tempo e evitando erros humanos.
 
-1. Clone este repositório para o seu sistema ou faça o download como arquivo ZIP e extraia-o.
+### Pré-requisitos
 
-2. Abra um terminal e navegue até o diretório do projeto.
+- [Node.js](https://nodejs.org/) versão 14.x ou superior instalado.
+- Biblioteca `xlsx` para manipulação de arquivos Excel. Você pode instalá-la com o seguinte comando:
 
-3. Instale as dependências necessárias executando o seguinte comando:
+  ```
+  npm install xlsx
+  ```
 
-```bash
-npm install chokidar xlsx
-```
+### Instalação
 
-## Configuração do Diretório
+1. Faça o download ou clone este repositório para a sua máquina.
 
-Abra o arquivo `index.js` e ajuste as seguintes variáveis de acordo com o seu ambiente:
+2. Abra o terminal e navegue até o diretório do projeto.
 
-- `inputFolderPath`: O caminho para a pasta onde os arquivos Excel ou CSV serão monitorados.
-- `outputFolderPath`: O caminho para a pasta onde os arquivos CSV convertidos serão movidos.
+3. Execute o seguinte comando para instalar as dependências necessárias:
 
-## Uso
+   ```
+   npm install
+   ```
 
-1. No terminal, navegue até o diretório do projeto.
+### Uso
 
-2. Execute o seguinte comando para iniciar o monitoramento e conversão:
+1. Abra o arquivo `automatizador.js` em um editor de texto.
 
-```bash
-node index.js
-```
+2. Configure as variáveis `inputFolderPath` e `outputFolderPath` para definir as pastas de entrada e saída, respectivamente.
 
-3. O script agora está monitorando a pasta de entrada especificada. Quando novos arquivos Excel ou CSV forem adicionados, eles serão automaticamente convertidos e movidos para a pasta de saída.
+3. No terminal, dentro do diretório do projeto, execute o seguinte comando para iniciar o conversor:
 
-## Funcionamento
+   ```
+   node automatizador.js
+   ```
 
-- Quando um novo arquivo Excel (`.xlsx`) é detectado na pasta de entrada:
+O script começará a monitorar a pasta de entrada para novos arquivos Excel (XLSX) e CSV. Quando um arquivo é adicionado à pasta de entrada, o script detecta automaticamente o tipo de arquivo e o converte para o formato correspondente. O arquivo convertido é então movido para a pasta de saída correspondente.
 
-  - O script lê o arquivo Excel e converte seu conteúdo para o formato CSV.
-  - O arquivo CSV resultante é salvo na pasta de saída com o mesmo nome do arquivo Excel.
+### Funcionalidades Adicionais
 
-- Quando um novo arquivo CSV (`.csv`) é detectado na pasta de entrada:
-  - O script move o arquivo CSV para a pasta de saída.
+- O script lida com a situação em que um arquivo está ocupado ou bloqueado durante a movimentação, realizando até cinco tentativas em intervalos de 1 segundo.
 
-## Notas
+### Tecnologias Utilizadas
 
-- O script utiliza a biblioteca `chokidar` para monitorar a pasta e a biblioteca `xlsx` para manipulação de arquivos Excel.
-
-- O código inclui tratamento para casos em que os arquivos estão bloqueados ou ocupados durante a movimentação.
-
-## Contribuições
-
-Se você quiser contribuir com melhorias, correções ou novos recursos, fique à vontade para abrir um pull request neste repositório.
-
-## Licença
-
-Este projeto está licenciado sob a Licença MIT. Consulte o arquivo `LICENSE` para obter mais detalhes.
+- Node.js: Linguagem de programação utilizada para desenvolver o script.
+- Biblioteca `xlsx`: Usada para ler e escrever arquivos Excel.
+- Biblioteca `chokidar`: Utilizada para monitorar mudanças em pastas.
 
 ---
 
-Agora, o `README.md` foi atualizado para incluir informações mais detalhadas sobre a instalação, configuração e uso do script, bem como detalhes sobre as dependências e a licença. Certifique-se de personalizar ainda mais as informações para se adequarem ao seu projeto específico.
+Agora você tem um conversor automatizado que monitora sua pasta de entrada e realiza a conversão de arquivos Excel para CSV e vice-versa de forma eficiente e livre de erros! 🚀
